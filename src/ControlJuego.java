@@ -17,15 +17,24 @@ public class ControlJuego {
 
 	private int[][] tablero;
 	private int puntuacion;
+	private int casillasPulsadas;
+	private boolean minaPulsada;
 
 	public ControlJuego() {
 		// Creamos el tablero:
 		tablero = new int[LADO_TABLERO][LADO_TABLERO];
+		puntuacion = 0;
+		casillasPulsadas = 0;
+		minaPulsada = false;
 
 		// Inicializamos una nueva partida
 		inicializarPartida();
-		
-		dibujarTablero();
+
+		depurarTablero();
+	}
+	
+	public boolean getMinaPulsada() {
+		return minaPulsada;
 	}
 
 	/**
@@ -58,15 +67,6 @@ public class ControlJuego {
 			}
 		}
 	}
-	
-	private void dibujarTablero() {
-		for (int i = 0; i < tablero.length; i++) {
-			for (int j = 0; j < tablero.length; j++) {
-				System.out.print(" "+tablero[i][j]+" ");
-			}
-			System.out.println("\n");
-		}
-	}
 
 	/**
 	 * MÈtodo que nos indica si una casilla es mina
@@ -80,19 +80,17 @@ public class ControlJuego {
 	}
 
 	/**
-	 * Este mÈtodo se encarga de repartir 10 minas aleatoriamente en el tablero
+	 * Este mÈtodo se encarga de repartir minas aleatoriamente en el tablero
 	 */
 
 	private void repartirMinas() {
 		int fila, col;
-		for (int i = 0; i < 10; i++) {
-			
-				do {
-					fila = (int) (Math.random() * 10);
-					col = (int) (Math.random() * 10);
-				} while (esMina(fila, col));
-				tablero[fila][col] = MINA;
-			
+		for (int i = 0; i < MINAS_INICIALES; i++) {
+			do {
+				fila = (int) (Math.random() * 10);
+				col = (int) (Math.random() * 10);
+			} while (esMina(fila, col));
+			tablero[fila][col] = MINA;
 		}
 	}
 
@@ -108,9 +106,9 @@ public class ControlJuego {
 	 **/
 	private int calculoMinasAdjuntas(int f, int c) {
 		int suma = 0;
-		for (int i = f - 1; i <= f + 1; i++) {
-			for (int j = c - 1; j <= c+1; j++) {
-				if (i != f && j != c) {//Evitamos sumar la casilla propia que estamos pasando
+		for (int i = (f - 1); i <= (f + 1); i++) {
+			for (int j = (c - 1); j <= (c + 1); j++) {
+				if (i != f || j != c) {// Evitamos sumar la casilla propia que estamos pasando
 					try {
 						suma += tablero[i][j] == MINA ? 1 : 0;// Si esa casilla es una mina, sumamos 1. Si no, es 0
 					} catch (ArrayIndexOutOfBoundsException e) {
@@ -132,7 +130,13 @@ public class ControlJuego {
 	 * @return : Verdadero si no ha explotado una mina. Falso en caso contrario.
 	 */
 	public boolean abrirCasilla(int i, int j) {
-		return false;
+		casillasPulsadas++;
+		if (tablero[i][j] != MINA) {
+			puntuacion += tablero[i][j];
+		} else {
+			minaPulsada = true;
+		}
+		return tablero[i][j] == MINA;
 	}
 
 	/**
@@ -143,7 +147,11 @@ public class ControlJuego {
 	 *         minas.
 	 **/
 	public boolean esFinJuego() {
-		return false;
+		boolean fin = false;
+		if (minaPulsada || casillasPulsadas >= (Math.sqrt(LADO_TABLERO) - MINAS_INICIALES)) {
+			fin = true;
+		}
+		return fin;
 	}
 
 	/**
@@ -159,6 +167,7 @@ public class ControlJuego {
 			System.out.println();
 		}
 		System.out.println("\nPuntuaci√≥n: " + puntuacion);
+		System.out.println("\nCasillas pulsadas: " + casillasPulsadas);
 	}
 
 	/**
@@ -171,7 +180,7 @@ public class ControlJuego {
 	 * @return Un entero que representa el n√∫mero de minas alrededor de la celda
 	 */
 	public int getMinasAlrededor(int i, int j) {
-		return 0;
+		return tablero[i][j];
 	}
 
 	/**
@@ -180,7 +189,7 @@ public class ControlJuego {
 	 * @return Un entero con la puntuaci√≥n actual
 	 */
 	public int getPuntuacion() {
-		return 0;
+		return puntuacion;
 	}
 
 }
