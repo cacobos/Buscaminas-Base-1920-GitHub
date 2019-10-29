@@ -18,50 +18,25 @@ import javax.swing.JPanel;
  * @author jesusredondogarcia
  **
  */
-public class ActionBoton implements MouseListener{
-	private int i,j;
-	private VentanaPrincipal ventana;
+public class ActionBoton implements ActionListener{
+	private VentanaPrincipal ventanaPrincipal;
+	private int i, j;
 	
 
-	public ActionBoton(int i, int j, VentanaPrincipal ventana) {
+	public ActionBoton(VentanaPrincipal ventanaPrincipal, int i, int j) {
+		this.ventanaPrincipal=ventanaPrincipal;
 		this.i=i;
 		this.j=j;
-		this.ventana=ventana;
 	}
 	
 	/**
 	 *Acción que ocurrirá cuando pulsamos uno de los botones.
-	 */	
-
+	 */
 	@Override
-	public void mouseClicked(MouseEvent e) {			
-		ventana.pulsarBoton(i, j, e.getButton());
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
+	public void actionPerformed(ActionEvent e) {
+		ventanaPrincipal.pulsarBoton(i, j);
+		
 		
 	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
 
 }

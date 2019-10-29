@@ -126,6 +126,7 @@ public class VentanaPrincipal {
 		for (int i = 0; i < botonesJuego.length; i++) {
 			for (int j = 0; j < botonesJuego[i].length; j++) {
 				botonesJuego[i][j] = new JButton("-");
+				botonesJuego[i][j].setEnabled(false);
 				panelesJuego[i][j].add(botonesJuego[i][j]);
 			}
 		}
@@ -147,9 +148,17 @@ public class VentanaPrincipal {
 	public void inicializarListeners() {
 		for (int i = 0; i < botonesJuego.length; i++) {
 			for (int j = 0; j < botonesJuego[i].length; j++) {
-				botonesJuego[i][j].addMouseListener(new ActionBoton(i, j, this));
+				botonesJuego[i][j].addActionListener(new ActionBoton(this, i, j));
 			}
 		}
+
+		botonEmpezar.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				activarBotones();
+			}
+		});
 	}
 
 	/**
@@ -164,47 +173,16 @@ public class VentanaPrincipal {
 	 * @param j: posición horizontal de la celda.
 	 */
 	public void mostrarNumMinasAlrededor(int i, int j) {
-		int nMinas = juego.getMinasAlrededor(i, j);
-		System.out.println(nMinas);
-		JLabel label = new JLabel(Integer.toString(nMinas));
-		label.setHorizontalAlignment(JLabel.CENTER);
-		label.setForeground(correspondenciaColores[i]);
-		panelesJuego[i][j].remove(botonesJuego[i][j]);
-		panelesJuego[i][j].add(label);
-		if (juego.getMinasAlrededor(i, j) == 0) {
-			pulsarAlrededor(i, j);
+		if (botonesJuego[i][j].getParent() == panelesJuego[i][j]) {
+			panelesJuego[i][j].remove(botonesJuego[i][j]);
+			int n = juego.getMinasAlrededor(i, j);
+			JLabel label = new JLabel(Integer.toString(n));
+			label.setForeground(correspondenciaColores[n]);
+			label.setHorizontalAlignment(JLabel.CENTER);
+			panelesJuego[i][j].add(label);
+			refrescarPantalla();
 		}
-	}
-	
-	public void pulsarAlrededor(int f, int c) {
-		for (int i = (f - 1); i <= (f + 1); i++) {
-			for (int j = (c - 1); j <= (c + 1); j++) {
-				if (i != f || j != c) {// Evitamos sumar la casilla propia que estamos pasando
-					try {
-						pulsarBoton(i, j, MouseEvent.BUTTON1);
-					} catch (ArrayIndexOutOfBoundsException e) {
-						
-					}
-				}
-			}
-		}
-	}
-	
-	public void pulsarBoton(int i, int j, int button) {
-		int n=juego.getMinasAlrededor(i, j);
-		if(button==MouseEvent.BUTTON1) {	
-			mostrarCasilla(i, j);			
-		}else {
-			colocarBandera(i, j);
-		}		
-		refrescarPantalla();
-		comprobarFinJuego();
-	}
-	
-	public void comprobarFinJuego() {
-		if(juego.esFinJuego()) {
-			mostrarFinJuego(juego.getMinaPulsada());
-		}
+
 	}
 
 	/**
@@ -217,7 +195,60 @@ public class VentanaPrincipal {
 	 *       juego.
 	 */
 	public void mostrarFinJuego(boolean porExplosion) {
-		//JOptionPane.showInputDialog(this,"El juego ha finalizado");
+		String[] mensajes = { "Volver a jugar", "Salir" };
+		String victoria;
+		if (porExplosion) {
+			victoria = "Has perdido";
+		} else {
+			victoria = "Enhorabuena, has ganado";
+		}
+		JOptionPane.showMessageDialog(ventana, victoria);
+		int opcion = JOptionPane.showConfirmDialog(ventana, "¿Quieres volver a jugar?", "Fin de la partida",
+				JOptionPane.YES_NO_OPTION);
+		switch (opcion) {
+		case 0:
+			resetearJuego();
+			break;
+		case 1:
+			ventana.dispose();
+
+		}
+	}
+
+	public void resetearJuego() {
+		panelJuego.removeAll();
+		juego = new ControlJuego();
+		// Paneles
+		panelesJuego = new JPanel[10][10];
+		for (int i = 0; i < panelesJuego.length; i++) {
+			for (int j = 0; j < panelesJuego[i].length; j++) {
+				panelesJuego[i][j] = new JPanel();
+				panelesJuego[i][j].setLayout(new GridLayout(1, 1));
+				panelJuego.add(panelesJuego[i][j]);
+			}
+		}
+
+		// Botones
+		botonesJuego = new JButton[10][10];
+		for (int i = 0; i < botonesJuego.length; i++) {
+			for (int j = 0; j < botonesJuego[i].length; j++) {
+				botonesJuego[i][j] = new JButton("-");
+				botonesJuego[i][j].setEnabled(false);
+				panelesJuego[i][j].add(botonesJuego[i][j]);
+			}
+		}
+
+		inicializarListeners();
+
+		refrescarPantalla();
+	}
+
+	public void activarBotones() {
+		for (int i = 0; i < botonesJuego.length; i++) {
+			for (int j = 0; j < botonesJuego[i].length; j++) {
+				botonesJuego[i][j].setEnabled(true);
+			}
+		}
 	}
 
 	/**
@@ -255,25 +286,36 @@ public class VentanaPrincipal {
 		inicializarListeners();
 	}
 
-	public void colocarBandera(int i, int j) {
-		if (panelesJuego[i][j].isAncestorOf(bandera)) {
-			panelesJuego[i][j].remove(botonesJuego[i][j]);
-			panelesJuego[i][j].add(bandera);
-		} else {
-			panelesJuego[i][j].remove(bandera);
-			panelesJuego[i][j].add(botonesJuego[i][j]);
-		}
-		refrescarPantalla();
-	}	
-	
+	public void abrirAdyacentes(int i, int j) {
+		for (int a = i - 1; a <= i + 1; a++) {
+			for (int b = j - 1; b <= j + 1; b++) {
+				if (a != i || b != j) {
+					try {						
+						if (!juego.casillaAbierta(a, b)) {
+							pulsarBoton(a, b);
+						}
+					} catch (IndexOutOfBoundsException e) {
 
-	public void mostrarCasilla(int i, int j) {
-		if (juego.abrirCasilla(i, j)) {
-			panelesJuego[i][j].remove(botonesJuego[i][j]);
-			panelesJuego[i][j].add(new JLabel("MINA"));
-			mostrarFinJuego(true);
+					}
+				}
+			}
+		}
+	}
+
+	public void pulsarBoton(int i, int j) {
+		boolean fin = juego.abrirCasilla(i, j);
+		if (fin) {
+			if (juego.esFinJuego()) {
+				mostrarFinJuego(false);
+			} else {
+				mostrarNumMinasAlrededor(i, j);
+			}
+			if (juego.getMinasAlrededor(i, j) == 0) {
+				abrirAdyacentes(i, j);
+			}
+			actualizarPuntuacion();
 		} else {
-			mostrarNumMinasAlrededor(i, j);
+			mostrarFinJuego(true);
 		}
 	}
 }
