@@ -106,8 +106,9 @@ public class ControlJuego {
 	 * @return Devuelve verdadero si se han abierto todas las celdas que no son minas.
 	 **/
 	public boolean esFinJuego(){
-		int nCasillas=(int)Math.sqrt(LADO_TABLERO)-MINAS_INICIALES;
+		int nCasillas=(LADO_TABLERO*LADO_TABLERO)-MINAS_INICIALES;
 		return casAbiertas==nCasillas;
+		
 	}
 	
 	

@@ -208,6 +208,7 @@ public class VentanaPrincipal {
 		switch (opcion) {
 		case 0:
 			resetearJuego();
+			actualizarPuntuacion();
 			break;
 		case 1:
 			ventana.dispose();
@@ -295,7 +296,7 @@ public class VentanaPrincipal {
 							pulsarBoton(a, b);
 						}
 					} catch (IndexOutOfBoundsException e) {
-
+							//No hacemos nada
 					}
 				}
 			}
