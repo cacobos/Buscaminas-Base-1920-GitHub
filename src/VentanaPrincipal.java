@@ -6,7 +6,14 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileInputStream;
 
+import javax.print.attribute.standard.Media;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -16,6 +23,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
+
+
+
 
 public class VentanaPrincipal {
 
@@ -195,6 +206,7 @@ public class VentanaPrincipal {
 	 *       juego.
 	 */
 	public void mostrarFinJuego(boolean porExplosion) {
+		reproducirSonido("./victoria.mp3");
 		String[] mensajes = { "Volver a jugar", "Salir" };
 		String victoria;
 		if (porExplosion) {
@@ -318,5 +330,18 @@ public class VentanaPrincipal {
 		} else {
 			mostrarFinJuego(true);
 		}
+	}
+	
+	public void colocarBandera(int i, int j) {		
+		panelesJuego[i][j].remove(botonesJuego[i][j]);		
+		JLabel label = new JLabel();
+		label.setIcon(new ImageIcon("bandera.png"));
+		label.setHorizontalAlignment(JLabel.CENTER);
+		panelesJuego[i][j].add(label);
+		refrescarPantalla();
+	}
+	
+	public static void reproducirSonido(String sonido) {
+		
 	}
 }
