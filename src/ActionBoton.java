@@ -18,7 +18,7 @@ import javax.swing.JPanel;
  * @author jesusredondogarcia
  **
  */
-public class ActionBoton implements ActionListener{
+public class ActionBoton implements MouseListener{
 	private VentanaPrincipal ventanaPrincipal;
 	private int i, j;
 	
@@ -32,10 +32,49 @@ public class ActionBoton implements ActionListener{
 	/**
 	 *Acción que ocurrirá cuando pulsamos uno de los botones.
 	 */
-	@Override
+	/*@Override
 	public void actionPerformed(ActionEvent e) {
 		ventanaPrincipal.pulsarBoton(i, j);
 		
+		
+	}*/
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		
+			if(arg0.getButton()==MouseEvent.BUTTON1) {			
+				ventanaPrincipal.pulsarBoton(i, j);
+			}if((arg0.getButton()==MouseEvent.BUTTON3)) {
+				ventanaPrincipal.colocarBandera(i, j);
+			}
+		
+			
+				
+		
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
 		
 	}
 

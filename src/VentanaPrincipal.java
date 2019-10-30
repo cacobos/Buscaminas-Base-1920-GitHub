@@ -6,8 +6,10 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import javax.print.attribute.standard.Media;
 import javax.sound.sampled.AudioInputStream;
@@ -24,9 +26,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-
-
-
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
 
 public class VentanaPrincipal {
 
@@ -47,8 +48,8 @@ public class VentanaPrincipal {
 			Color.RED, Color.RED, Color.RED, Color.RED };
 
 	JButton botonEmpezar;
-	JTextField pantallaPuntuacion;
-	JLabel bandera;
+	JTextField pantallaPuntuacion;	
+	ImageIcon bandera;
 
 	// LA VENTANA GUARDA UN CONTROL DE JUEGO:
 	ControlJuego juego;
@@ -146,9 +147,7 @@ public class VentanaPrincipal {
 		panelEmpezar.add(botonEmpezar);
 		panelPuntuacion.add(pantallaPuntuacion);
 
-		ImageIcon icono = new ImageIcon("bandera.png");
-		bandera = new JLabel();
-		bandera.setIcon(icono);
+		bandera = new ImageIcon("bandera.png");
 
 	}
 
@@ -159,10 +158,10 @@ public class VentanaPrincipal {
 	public void inicializarListeners() {
 		for (int i = 0; i < botonesJuego.length; i++) {
 			for (int j = 0; j < botonesJuego[i].length; j++) {
-				botonesJuego[i][j].addActionListener(new ActionBoton(this, i, j));
+				botonesJuego[i][j].addMouseListener(new ActionBoton(this, i, j));
 			}
 		}
-
+		
 		botonEmpezar.addActionListener(new ActionListener() {
 
 			@Override
@@ -211,8 +210,10 @@ public class VentanaPrincipal {
 		String victoria;
 		if (porExplosion) {
 			victoria = "Has perdido";
+			
 		} else {
 			victoria = "Enhorabuena, has ganado";
+			reproducirSonido("victoria.mp3");
 		}
 		JOptionPane.showMessageDialog(ventana, victoria);
 		int opcion = JOptionPane.showConfirmDialog(ventana, "¿Quieres volver a jugar?", "Fin de la partida",
@@ -303,12 +304,12 @@ public class VentanaPrincipal {
 		for (int a = i - 1; a <= i + 1; a++) {
 			for (int b = j - 1; b <= j + 1; b++) {
 				if (a != i || b != j) {
-					try {						
+					try {
 						if (!juego.casillaAbierta(a, b)) {
 							pulsarBoton(a, b);
 						}
 					} catch (IndexOutOfBoundsException e) {
-							//No hacemos nada
+						// No hacemos nada
 					}
 				}
 			}
@@ -331,17 +332,30 @@ public class VentanaPrincipal {
 			mostrarFinJuego(true);
 		}
 	}
-	
-	public void colocarBandera(int i, int j) {		
-		panelesJuego[i][j].remove(botonesJuego[i][j]);		
-		JLabel label = new JLabel();
-		label.setIcon(new ImageIcon("bandera.png"));
-		label.setHorizontalAlignment(JLabel.CENTER);
-		panelesJuego[i][j].add(label);
+
+	public void colocarBandera(int i, int j) {
+		if (botonesJuego[i][j].getIcon() == bandera) {
+			botonesJuego[i][j].setIcon(null);
+			botonesJuego[i][j].setText("-");
+		} else {
+			botonesJuego[i][j].setIcon(bandera);
+			botonesJuego[i][j].setText("");
+		}
+
 		refrescarPantalla();
 	}
-	
-	public static void reproducirSonido(String sonido) {
-		
+
+	public void quitarBandera(int i, int j) {
+		panelesJuego[i][j].removeAll();
+		panelesJuego[i][j].add(botonesJuego[i][j]);
+		refrescarPantalla();
 	}
+
+	public static void reproducirSonido(String sonido) {
+		ReproduccionSonido rs=new ReproduccionSonido(sonido);
+		rs.start();
+
+	      
+	}
+
 }
