@@ -21,6 +21,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -53,6 +56,10 @@ public class VentanaPrincipal {
 
 	// LA VENTANA GUARDA UN CONTROL DE JUEGO:
 	ControlJuego juego;
+	
+	JMenuBar barra;
+	JMenu menuUsuario;
+	JMenuItem itemElegirUsuario;
 
 	// Constructor, marca el tamaño y el cierre del frame
 	public VentanaPrincipal() {
@@ -146,8 +153,16 @@ public class VentanaPrincipal {
 		// BotónEmpezar:
 		panelEmpezar.add(botonEmpezar);
 		panelPuntuacion.add(pantallaPuntuacion);
-
+		
+		//Icono para bandera
 		bandera = new ImageIcon("bandera.png");
+		
+		barra=new JMenuBar();
+		menuUsuario= new JMenu("Usuario");
+		itemElegirUsuario=new JMenuItem("Elegir usuario");
+		barra.add(menuUsuario);
+		menuUsuario.add(itemElegirUsuario);
+		ventana.setJMenuBar(barra);
 
 	}
 
