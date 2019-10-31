@@ -57,9 +57,22 @@ public class VentanaPrincipal {
 	// LA VENTANA GUARDA UN CONTROL DE JUEGO:
 	ControlJuego juego;
 	
-	JMenuBar barra;
+	/*JMenuBar barra;
 	JMenu menuUsuario;
+	JMenu menuNivel;
 	JMenuItem itemElegirUsuario;
+	JMenuItem itemNivelFacil;
+	JMenuItem itemNivelMedio;
+	JMenuItem itemNivelDificil;
+	JMenuItem[] itemsNiveles={itemNivelFacil, itemNivelMedio, itemNivelDificil};
+	
+	
+	int nivel;
+	final static int NIVEL_FACIL=1;
+	final static int NIVEL_MEDIO=2;
+	final static int NIVEL_DIFÍCIL=3;*/
+	
+	
 
 	// Constructor, marca el tamaÃ±o y el cierre del frame
 	public VentanaPrincipal() {
@@ -157,12 +170,8 @@ public class VentanaPrincipal {
 		//Icono para bandera
 		bandera = new ImageIcon("bandera.png");
 		
-		barra=new JMenuBar();
-		menuUsuario= new JMenu("Usuario");
-		itemElegirUsuario=new JMenuItem("Elegir usuario");
-		barra.add(menuUsuario);
-		menuUsuario.add(itemElegirUsuario);
-		ventana.setJMenuBar(barra);
+		
+		
 
 	}
 
@@ -177,13 +186,18 @@ public class VentanaPrincipal {
 			}
 		}
 		
+		
+		
 		botonEmpezar.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				activarBotones();
+				botonEmpezar.setEnabled(false);
 			}
 		});
+		
+		
 	}
 
 	/**
@@ -220,18 +234,19 @@ public class VentanaPrincipal {
 	 *       juego.
 	 */
 	public void mostrarFinJuego(boolean porExplosion) {
-		reproducirSonido("./victoria.mp3");
+		reproducirSonido("./sonidos/victoria.mp3");
 		String[] mensajes = { "Volver a jugar", "Salir" };
 		String victoria;
 		if (porExplosion) {
 			victoria = "Has perdido";
+			reproducirSonido("./sonidos/derrota.mp3");
 			
 		} else {
 			victoria = "Enhorabuena, has ganado";
 			reproducirSonido("victoria.mp3");
 		}
 		JOptionPane.showMessageDialog(ventana, victoria);
-		int opcion = JOptionPane.showConfirmDialog(ventana, "Â¿Quieres volver a jugar?", "Fin de la partida",
+		int opcion = JOptionPane.showConfirmDialog(ventana, "¿Quieres volver a jugar?", "Fin de la partida",
 				JOptionPane.YES_NO_OPTION);
 		switch (opcion) {
 		case 0:
@@ -315,12 +330,20 @@ public class VentanaPrincipal {
 		inicializarListeners();
 	}
 
+	/**
+	 * Llama al método pulsarBoton(a,b) pasando por parámetros las casillas adyacentes a la que nos
+	 * ha llegado por parámetros 
+	 * @param i es la fila de la casilla cuyas adyacentes queremos abrir
+	 * @param j es la columna de la casilla cuyas adyacentes queremos abrir
+	 */
 	public void abrirAdyacentes(int i, int j) {
+		//Creamos una matriz de 3x3 "rodeando" a la casilla de origen y abrimos todas menos la central
+		//Si quedan fuera del tablero, controlamos la excepción IndexOutOfBounds
 		for (int a = i - 1; a <= i + 1; a++) {
 			for (int b = j - 1; b <= j + 1; b++) {
 				if (a != i || b != j) {
 					try {
-						if (!juego.casillaAbierta(a, b)) {
+						if (!juego.casillaAbierta(a, b)) {//Controlamos que no haya sido sido abierta antes
 							pulsarBoton(a, b);
 						}
 					} catch (IndexOutOfBoundsException e) {
@@ -331,6 +354,12 @@ public class VentanaPrincipal {
 		}
 	}
 
+	/**
+	 * Si el control de juego nos dice que ha terminado la partida, llamamos a mostrarFinJuego()
+	 * Si no, abrimos la casilla llamando a mostrarMinasAlrededor(). Si es un 0, también se abren las adyacentes
+	 * @param i es la fila del botón que se ha pulsado
+	 * @param j es la columna del botón que se ha pulsado
+	 */
 	public void pulsarBoton(int i, int j) {
 		boolean fin = juego.abrirCasilla(i, j);
 		if (fin) {
@@ -347,7 +376,14 @@ public class VentanaPrincipal {
 			mostrarFinJuego(true);
 		}
 	}
-
+	
+	
+	/**
+	 * Si hay un botón en el panel, lo elimina y coloca un label con una bandera
+	 * Si hay un label con una bandera, coloca el botón que le corresponde al panel
+	 * @param i es la fila del panel que queremos modificar
+	 * @param j es la columna del panel que queremos modificar
+	 */
 	public void colocarBandera(int i, int j) {
 		if (botonesJuego[i][j].getIcon() == bandera) {
 			botonesJuego[i][j].setIcon(null);
@@ -358,19 +394,15 @@ public class VentanaPrincipal {
 		}
 
 		refrescarPantalla();
-	}
+	}	
+	
 
-	public void quitarBandera(int i, int j) {
-		panelesJuego[i][j].removeAll();
-		panelesJuego[i][j].add(botonesJuego[i][j]);
-		refrescarPantalla();
-	}
-
-	public static void reproducirSonido(String sonido) {
+	/**
+	 * Crea un objeto ReproduccionSonido e inicia una reproducción
+	 * @param sonido es la ruta del archivo que queremos reproducir
+	 */
+	public void reproducirSonido(String sonido) {
 		ReproduccionSonido rs=new ReproduccionSonido(sonido);
-		rs.start();
-
-	      
+		rs.start();	      
 	}
-
 }

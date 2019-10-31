@@ -47,11 +47,6 @@ public class ActionBoton implements MouseListener{
 			}if((arg0.getButton()==MouseEvent.BUTTON3)) {
 				ventanaPrincipal.colocarBandera(i, j);
 			}
-		
-			
-				
-		
-		
 	}
 
 	@Override
