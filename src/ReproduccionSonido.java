@@ -14,7 +14,7 @@ public class ReproduccionSonido extends Thread{
 	public void run() {
 		Player apl;
 		try {
-			apl = new Player(new FileInputStream(uri));
+			apl = new Player(new FileInputStream(uri));			
 			apl.play();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

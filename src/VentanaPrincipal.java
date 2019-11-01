@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -33,6 +34,8 @@ import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
 public class VentanaPrincipal {
+	int ladoTablero;
+	int minas;
 
 	// La ventana principal, en este caso, guarda todos los componentes:
 	JFrame ventana;
@@ -51,39 +54,29 @@ public class VentanaPrincipal {
 			Color.RED, Color.RED, Color.RED, Color.RED };
 
 	JButton botonEmpezar;
-	JTextField pantallaPuntuacion;	
+	JTextField pantallaPuntuacion;
 	ImageIcon bandera;
+	ImageIcon mina;
+	
 
 	// LA VENTANA GUARDA UN CONTROL DE JUEGO:
 	ControlJuego juego;
-	
-	/*JMenuBar barra;
-	JMenu menuUsuario;
-	JMenu menuNivel;
-	JMenuItem itemElegirUsuario;
-	JMenuItem itemNivelFacil;
-	JMenuItem itemNivelMedio;
-	JMenuItem itemNivelDificil;
-	JMenuItem[] itemsNiveles={itemNivelFacil, itemNivelMedio, itemNivelDificil};
-	
-	
-	int nivel;
-	final static int NIVEL_FACIL=1;
-	final static int NIVEL_MEDIO=2;
-	final static int NIVEL_DIFÕCIL=3;*/
-	
-	
 
 	// Constructor, marca el tama√±o y el cierre del frame
 	public VentanaPrincipal() {
 		ventana = new JFrame();
 		ventana.setBounds(100, 100, 700, 500);
+		ventana.setLocationRelativeTo(null);
 		ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		juego = new ControlJuego();
+		pedirNivel();
+		juego = new ControlJuego(minas, ladoTablero);
+				
+		
 	}
 
 	// Inicializa todos los componentes del frame
 	public void inicializarComponentes() {
+		
 
 		// Definimos el layout:
 		ventana.setLayout(new GridBagLayout());
@@ -95,7 +88,7 @@ public class VentanaPrincipal {
 		panelPuntuacion = new JPanel();
 		panelPuntuacion.setLayout(new GridLayout(1, 1));
 		panelJuego = new JPanel();
-		panelJuego.setLayout(new GridLayout(10, 10));
+		panelJuego.setLayout(new GridLayout(ladoTablero, ladoTablero));
 
 		botonEmpezar = new JButton("Go!");
 		pantallaPuntuacion = new JTextField("0");
@@ -144,7 +137,7 @@ public class VentanaPrincipal {
 		ventana.add(panelJuego, settings);
 
 		// Paneles
-		panelesJuego = new JPanel[10][10];
+		panelesJuego = new JPanel[ladoTablero][ladoTablero];
 		for (int i = 0; i < panelesJuego.length; i++) {
 			for (int j = 0; j < panelesJuego[i].length; j++) {
 				panelesJuego[i][j] = new JPanel();
@@ -154,7 +147,7 @@ public class VentanaPrincipal {
 		}
 
 		// Botones
-		botonesJuego = new JButton[10][10];
+		botonesJuego = new JButton[ladoTablero][ladoTablero];
 		for (int i = 0; i < botonesJuego.length; i++) {
 			for (int j = 0; j < botonesJuego[i].length; j++) {
 				botonesJuego[i][j] = new JButton("-");
@@ -166,12 +159,10 @@ public class VentanaPrincipal {
 		// Bot√≥nEmpezar:
 		panelEmpezar.add(botonEmpezar);
 		panelPuntuacion.add(pantallaPuntuacion);
-		
-		//Icono para bandera
+
+		// Icono para bandera
 		bandera = new ImageIcon("bandera.png");
-		
-		
-		
+		mina=new ImageIcon("mina.png");
 
 	}
 
@@ -185,9 +176,7 @@ public class VentanaPrincipal {
 				botonesJuego[i][j].addMouseListener(new ActionBoton(this, i, j));
 			}
 		}
-		
-		
-		
+
 		botonEmpezar.addActionListener(new ActionListener() {
 
 			@Override
@@ -196,8 +185,7 @@ public class VentanaPrincipal {
 				botonEmpezar.setEnabled(false);
 			}
 		});
-		
-		
+
 	}
 
 	/**
@@ -234,16 +222,17 @@ public class VentanaPrincipal {
 	 *       juego.
 	 */
 	public void mostrarFinJuego(boolean porExplosion) {
-		reproducirSonido("./sonidos/victoria.mp3");
 		String[] mensajes = { "Volver a jugar", "Salir" };
 		String victoria;
+
+		abrirTablero();
 		if (porExplosion) {
 			victoria = "Has perdido";
 			reproducirSonido("./sonidos/derrota.mp3");
-			
+
 		} else {
 			victoria = "Enhorabuena, has ganado";
-			reproducirSonido("victoria.mp3");
+			reproducirSonido("./sonidos/victoria.mp3");
 		}
 		JOptionPane.showMessageDialog(ventana, victoria);
 		int opcion = JOptionPane.showConfirmDialog(ventana, "øQuieres volver a jugar?", "Fin de la partida",
@@ -258,12 +247,43 @@ public class VentanaPrincipal {
 
 		}
 	}
+	
+	private void pedirNivel() {
+		String[] opciones= {"F·cil", "Intermedio", "DifÌcil"};
+		int opc = JOptionPane.showOptionDialog(null, "Elige el nivel de dificultad",
+                "Nivel",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
+        switch (opc) {
+		case 0:
+			ladoTablero=8;
+			minas=10;
+			ventana.setBounds(100,100,700,400);
+			break;
+		case 1:
+
+			ladoTablero=16;
+			minas=40;
+			ventana.setBounds(100,100,900,500);
+			break;
+		case 2:
+			ladoTablero=20;
+			minas=99;
+			ventana.setBounds(100,100,1050,600);
+			break;
+		default:
+			ladoTablero=8;
+			minas=10;
+			ventana.setBounds(100,100,350,200);
+			break;
+        }
+	}
 
 	public void resetearJuego() {
-		panelJuego.removeAll();
-		juego = new ControlJuego();
+		panelJuego.removeAll();	
+		pedirNivel();
+		juego = new ControlJuego(minas, ladoTablero);
 		// Paneles
-		panelesJuego = new JPanel[10][10];
+		panelesJuego = new JPanel[ladoTablero][ladoTablero];
 		for (int i = 0; i < panelesJuego.length; i++) {
 			for (int j = 0; j < panelesJuego[i].length; j++) {
 				panelesJuego[i][j] = new JPanel();
@@ -273,7 +293,7 @@ public class VentanaPrincipal {
 		}
 
 		// Botones
-		botonesJuego = new JButton[10][10];
+		botonesJuego = new JButton[ladoTablero][ladoTablero];
 		for (int i = 0; i < botonesJuego.length; i++) {
 			for (int j = 0; j < botonesJuego[i].length; j++) {
 				botonesJuego[i][j] = new JButton("-");
@@ -281,9 +301,36 @@ public class VentanaPrincipal {
 				panelesJuego[i][j].add(botonesJuego[i][j]);
 			}
 		}
+		
+		botonEmpezar.setEnabled(true);
 
 		inicializarListeners();
 
+		refrescarPantalla();
+	}
+	
+	public void abrirTablero() {
+		for (int i = 0; i < panelesJuego.length; i++) {
+			for (int j = 0; j < panelesJuego[i].length; j++) {
+				if (botonesJuego[i][j].getParent() == panelesJuego[i][j]) {
+					panelesJuego[i][j].remove(botonesJuego[i][j]);
+					if(juego.abrirCasilla(i, j)) {						
+						int n = juego.getMinasAlrededor(i, j);
+						JLabel label = new JLabel(Integer.toString(n));
+						label.setForeground(correspondenciaColores[n]);						
+						panelesJuego[i][j].add(label);
+					}else {
+						JLabel label = new JLabel();
+						panelesJuego[i][j].add(label);
+						Image img=mina.getImage();
+						ImageIcon redim=new ImageIcon(img.getScaledInstance(20,  20,Image.SCALE_SMOOTH));
+						label.setHorizontalAlignment(JLabel.CENTER);
+						label.setIcon(redim);
+						
+					}	
+				}
+			}
+		}
 		refrescarPantalla();
 	}
 
@@ -331,19 +378,21 @@ public class VentanaPrincipal {
 	}
 
 	/**
-	 * Llama al mÈtodo pulsarBoton(a,b) pasando por par·metros las casillas adyacentes a la que nos
-	 * ha llegado por par·metros 
+	 * Llama al mÈtodo pulsarBoton(a,b) pasando por par·metros las casillas
+	 * adyacentes a la que nos ha llegado por par·metros
+	 * 
 	 * @param i es la fila de la casilla cuyas adyacentes queremos abrir
 	 * @param j es la columna de la casilla cuyas adyacentes queremos abrir
 	 */
 	public void abrirAdyacentes(int i, int j) {
-		//Creamos una matriz de 3x3 "rodeando" a la casilla de origen y abrimos todas menos la central
-		//Si quedan fuera del tablero, controlamos la excepciÛn IndexOutOfBounds
+		// Creamos una matriz de 3x3 "rodeando" a la casilla de origen y abrimos todas
+		// menos la central
+		// Si quedan fuera del tablero, controlamos la excepciÛn IndexOutOfBounds
 		for (int a = i - 1; a <= i + 1; a++) {
 			for (int b = j - 1; b <= j + 1; b++) {
 				if (a != i || b != j) {
 					try {
-						if (!juego.casillaAbierta(a, b)) {//Controlamos que no haya sido sido abierta antes
+						if (!juego.casillaAbierta(a, b)) {// Controlamos que no haya sido sido abierta antes
 							pulsarBoton(a, b);
 						}
 					} catch (IndexOutOfBoundsException e) {
@@ -355,8 +404,10 @@ public class VentanaPrincipal {
 	}
 
 	/**
-	 * Si el control de juego nos dice que ha terminado la partida, llamamos a mostrarFinJuego()
-	 * Si no, abrimos la casilla llamando a mostrarMinasAlrededor(). Si es un 0, tambiÈn se abren las adyacentes
+	 * Si el control de juego nos dice que ha terminado la partida, llamamos a
+	 * mostrarFinJuego() Si no, abrimos la casilla llamando a
+	 * mostrarMinasAlrededor(). Si es un 0, tambiÈn se abren las adyacentes
+	 * 
 	 * @param i es la fila del botÛn que se ha pulsado
 	 * @param j es la columna del botÛn que se ha pulsado
 	 */
@@ -376,11 +427,11 @@ public class VentanaPrincipal {
 			mostrarFinJuego(true);
 		}
 	}
-	
-	
+
 	/**
-	 * Si hay un botÛn en el panel, lo elimina y coloca un label con una bandera
-	 * Si hay un label con una bandera, coloca el botÛn que le corresponde al panel
+	 * Si hay un botÛn en el panel, lo elimina y coloca un label con una bandera Si
+	 * hay un label con una bandera, coloca el botÛn que le corresponde al panel
+	 * 
 	 * @param i es la fila del panel que queremos modificar
 	 * @param j es la columna del panel que queremos modificar
 	 */
@@ -394,15 +445,16 @@ public class VentanaPrincipal {
 		}
 
 		refrescarPantalla();
-	}	
-	
+	}
 
 	/**
 	 * Crea un objeto ReproduccionSonido e inicia una reproducciÛn
+	 * 
 	 * @param sonido es la ruta del archivo que queremos reproducir
 	 */
 	public void reproducirSonido(String sonido) {
-		ReproduccionSonido rs=new ReproduccionSonido(sonido);
-		rs.start();	      
+		ReproduccionSonido rs = new ReproduccionSonido(sonido);
+		rs.start();
 	}
+
 }

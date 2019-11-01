@@ -12,16 +12,18 @@ import java.util.Random;
  */
 public class ControlJuego {
 	private final static int MINA = -1;
-	int MINAS_INICIALES = 20;
-	int LADO_TABLERO = 10;
+	int minas;
+	int ladoTablero;
 
 	private int[][] tablero;
 	private boolean[][] abiertas;
 	private int puntuacion;
 	private int casAbiertas;
 
-	public ControlJuego() {
+	public ControlJuego(int minas, int lado) {
 		//Inicializamos una nueva partida
+		this.ladoTablero=lado;
+		this.minas=minas;
 				inicializarPartida();
 				depurarTablero();
 	}	
@@ -36,12 +38,13 @@ public class ControlJuego {
 	 *        minas guardan en el entero cuántas minas hay alrededor de la celda
 	 */
 	public void inicializarPartida() {
+		
 
-		tablero = new int[LADO_TABLERO][LADO_TABLERO];
+		tablero = new int[ladoTablero][ladoTablero];
 		//TODO: Repartir minas e inicializar puntaci�n. Si hubiese un tablero anterior, lo pongo todo a cero para inicializarlo.
 		puntuacion=0;
 		casAbiertas=0;
-		abiertas=new boolean[LADO_TABLERO][LADO_TABLERO];
+		abiertas=new boolean[ladoTablero][ladoTablero];
 		repartirMinas();
 		
 		
@@ -106,7 +109,7 @@ public class ControlJuego {
 	 * @return Devuelve verdadero si se han abierto todas las celdas que no son minas.
 	 **/
 	public boolean esFinJuego(){
-		int nCasillas=(LADO_TABLERO*LADO_TABLERO)-MINAS_INICIALES;
+		int nCasillas=(ladoTablero*ladoTablero)-minas;
 		return casAbiertas==nCasillas;
 		
 	}
@@ -151,10 +154,10 @@ public class ControlJuego {
 
 	private void repartirMinas() {
 		int fila, col;
-		for (int i = 0; i < MINAS_INICIALES; i++) {
+		for (int i = 0; i < minas; i++) {
 			do {
-				fila = (int) (Math.random() * 10);
-				col = (int) (Math.random() * 10);
+				fila = (int) (Math.random() * ladoTablero);
+				col = (int) (Math.random() * ladoTablero);
 			} while (esMina(fila, col));
 			tablero[fila][col] = MINA;
 		}
