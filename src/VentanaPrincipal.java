@@ -303,7 +303,7 @@ public class VentanaPrincipal {
 		default:
 			ladoTablero=8;
 			minas=10;
-			ventana.setBounds(100,100,350,200);
+			ventana.setBounds(100,100,700,400);
 			break;
         }
 	}
