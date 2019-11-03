@@ -61,6 +61,10 @@ public class VentanaPrincipal {
 
 	// LA VENTANA GUARDA UN CONTROL DE JUEGO:
 	ControlJuego juego;
+	
+	JMenuBar menu;
+	JMenu opciones;
+	JMenuItem salir;
 
 	// Constructor, marca el tamaÃ±o y el cierre del frame
 	public VentanaPrincipal() {
@@ -76,8 +80,6 @@ public class VentanaPrincipal {
 
 	// Inicializa todos los componentes del frame
 	public void inicializarComponentes() {
-		
-
 		// Definimos el layout:
 		ventana.setLayout(new GridBagLayout());
 
@@ -163,7 +165,17 @@ public class VentanaPrincipal {
 		// Icono para bandera
 		bandera = new ImageIcon("bandera.png");
 		mina=new ImageIcon("mina.png");
-
+		
+		//MenÃº y sus Ã­tems
+		menu=new JMenuBar();
+		opciones=new JMenu("Opciones");
+		salir=new JMenuItem("Salir");
+		
+		ventana.setJMenuBar(menu);
+		menu.add(opciones);
+		menu.add(salir);
+		opciones.add(salir);
+		
 	}
 
 	/**
@@ -185,7 +197,14 @@ public class VentanaPrincipal {
 				botonEmpezar.setEnabled(false);
 			}
 		});
-
+		salir.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				ventana.dispose();
+				
+			}
+		});
 	}
 
 	/**
@@ -235,7 +254,7 @@ public class VentanaPrincipal {
 			reproducirSonido("./sonidos/victoria.mp3");
 		}
 		JOptionPane.showMessageDialog(ventana, victoria);
-		int opcion = JOptionPane.showConfirmDialog(ventana, "¿Quieres volver a jugar?", "Fin de la partida",
+		int opcion = JOptionPane.showConfirmDialog(ventana, "ï¿½Quieres volver a jugar?", "Fin de la partida",
 				JOptionPane.YES_NO_OPTION);
 		switch (opcion) {
 		case 0:
@@ -249,7 +268,7 @@ public class VentanaPrincipal {
 	}
 	
 	private void pedirNivel() {
-		String[] opciones= {"Fácil", "Intermedio", "Difícil"};
+		String[] opciones= {"Fï¿½cil", "Intermedio", "Difï¿½cil"};
 		int opc = JOptionPane.showOptionDialog(null, "Elige el nivel de dificultad",
                 "Nivel",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
@@ -317,16 +336,17 @@ public class VentanaPrincipal {
 					if(juego.abrirCasilla(i, j)) {						
 						int n = juego.getMinasAlrededor(i, j);
 						JLabel label = new JLabel(Integer.toString(n));
-						label.setForeground(correspondenciaColores[n]);						
+						label.setForeground(correspondenciaColores[n]);	
+						label.setHorizontalAlignment(JLabel.CENTER);
 						panelesJuego[i][j].add(label);
 					}else {
 						JLabel label = new JLabel();
 						panelesJuego[i][j].add(label);
 						Image img=mina.getImage();
-						ImageIcon redim=new ImageIcon(img.getScaledInstance(20,  20,Image.SCALE_SMOOTH));
-						label.setHorizontalAlignment(JLabel.CENTER);
+						ImageIcon redim=new ImageIcon(img.getScaledInstance(10,  10,Image.SCALE_SMOOTH));
+											
 						label.setIcon(redim);
-						
+						label.setHorizontalAlignment(JLabel.CENTER);
 					}	
 				}
 			}
@@ -378,8 +398,8 @@ public class VentanaPrincipal {
 	}
 
 	/**
-	 * Llama al método pulsarBoton(a,b) pasando por parámetros las casillas
-	 * adyacentes a la que nos ha llegado por parámetros
+	 * Llama al mï¿½todo pulsarBoton(a,b) pasando por parï¿½metros las casillas
+	 * adyacentes a la que nos ha llegado por parï¿½metros
 	 * 
 	 * @param i es la fila de la casilla cuyas adyacentes queremos abrir
 	 * @param j es la columna de la casilla cuyas adyacentes queremos abrir
@@ -387,7 +407,7 @@ public class VentanaPrincipal {
 	public void abrirAdyacentes(int i, int j) {
 		// Creamos una matriz de 3x3 "rodeando" a la casilla de origen y abrimos todas
 		// menos la central
-		// Si quedan fuera del tablero, controlamos la excepción IndexOutOfBounds
+		// Si quedan fuera del tablero, controlamos la excepciï¿½n IndexOutOfBounds
 		for (int a = i - 1; a <= i + 1; a++) {
 			for (int b = j - 1; b <= j + 1; b++) {
 				if (a != i || b != j) {
@@ -406,10 +426,10 @@ public class VentanaPrincipal {
 	/**
 	 * Si el control de juego nos dice que ha terminado la partida, llamamos a
 	 * mostrarFinJuego() Si no, abrimos la casilla llamando a
-	 * mostrarMinasAlrededor(). Si es un 0, también se abren las adyacentes
+	 * mostrarMinasAlrededor(). Si es un 0, tambiï¿½n se abren las adyacentes
 	 * 
-	 * @param i es la fila del botón que se ha pulsado
-	 * @param j es la columna del botón que se ha pulsado
+	 * @param i es la fila del botï¿½n que se ha pulsado
+	 * @param j es la columna del botï¿½n que se ha pulsado
 	 */
 	public void pulsarBoton(int i, int j) {
 		boolean fin = juego.abrirCasilla(i, j);
@@ -429,8 +449,8 @@ public class VentanaPrincipal {
 	}
 
 	/**
-	 * Si hay un botón en el panel, lo elimina y coloca un label con una bandera Si
-	 * hay un label con una bandera, coloca el botón que le corresponde al panel
+	 * Si hay un botï¿½n en el panel, lo elimina y coloca un label con una bandera Si
+	 * hay un label con una bandera, coloca el botï¿½n que le corresponde al panel
 	 * 
 	 * @param i es la fila del panel que queremos modificar
 	 * @param j es la columna del panel que queremos modificar
@@ -448,7 +468,7 @@ public class VentanaPrincipal {
 	}
 
 	/**
-	 * Crea un objeto ReproduccionSonido e inicia una reproducción
+	 * Crea un objeto ReproduccionSonido e inicia una reproducciï¿½n
 	 * 
 	 * @param sonido es la ruta del archivo que queremos reproducir
 	 */

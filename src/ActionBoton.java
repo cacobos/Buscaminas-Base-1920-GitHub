@@ -44,7 +44,7 @@ public class ActionBoton implements MouseListener{
 		
 			if(arg0.getButton()==MouseEvent.BUTTON1) {			
 				ventanaPrincipal.pulsarBoton(i, j);
-			}if((arg0.getButton()==MouseEvent.BUTTON3)) {
+			}else {
 				ventanaPrincipal.colocarBandera(i, j);
 			}
 	}
