@@ -30,15 +30,10 @@ public class ActionBoton implements MouseListener{
 	}
 	
 	/**
-	 *Acci√≥n que ocurrir√° cuando pulsamos uno de los botones.
+	 * Acci√≥n que ocurrir·° cuando pulsamos uno de los botones.
+	 * Si el click es izquierdo, se abrir· el botÛn. Si no es izquierdo, se colocar· una bandera
 	 */
-	/*@Override
-	public void actionPerformed(ActionEvent e) {
-		ventanaPrincipal.pulsarBoton(i, j);
-		
-		
-	}*/
-
+	
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		

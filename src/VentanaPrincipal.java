@@ -33,6 +33,14 @@ import javax.swing.SwingConstants;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
+/**
+ * Clase que controla la ventana principal del programa. Coloca los paneles y botones del juego y los inicializa con sus listeners
+ * @see MÈtosdos inicializarComponentes() e inicializarListeners()
+ * {@link inicializar()}
+ * @author carloscobos
+ *
+ */
+
 public class VentanaPrincipal {
 	int ladoTablero;
 	int minas;
@@ -179,26 +187,28 @@ public class VentanaPrincipal {
 	}
 
 	/**
-	 * M√©todo que inicializa todos los l√≠steners que necesita inicialmente el
+	 * MÈtodo que inicializa todos los listeners que necesita inicialmente el
 	 * programa
 	 */
 	public void inicializarListeners() {
+		//Los botones de juego ttienen un ActionBoton como listener
 		for (int i = 0; i < botonesJuego.length; i++) {
 			for (int j = 0; j < botonesJuego[i].length; j++) {
 				botonesJuego[i][j].addMouseListener(new ActionBoton(this, i, j));
 			}
 		}
 
+		//El botÛn empezar activar· el resto de botones
 		botonEmpezar.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				activarBotones();
 				botonEmpezar.setEnabled(false);
 			}
 		});
-		salir.addActionListener(new ActionListener() {
-			
+		
+		//El botÛn salir (del men˙) cerrar· la ventana
+		salir.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				ventana.dispose();
@@ -209,14 +219,14 @@ public class VentanaPrincipal {
 
 	/**
 	 * Pinta en la pantalla el n√∫mero de minas que hay alrededor de la celda Saca
-	 * el bot√≥n que haya en la celda determinada y a√±ade un JLabel centrado y no
+	 * el botÛn que haya en la celda determinada y a√±ade un JLabel centrado y no
 	 * editable con el n√∫mero de minas alrededor. Se pinta el color del texto
-	 * seg√∫n la siguiente correspondecia (consultar la variable
-	 * correspondeciaColor): - 0 : negro - 1 : cyan - 2 : verde - 3 : naranja - 4 √≥
-	 * m√°s : rojo
+	 * seg˙n la siguiente correspondecia (consultar la variable
+	 * correspondeciaColor): - 0 : negro - 1 : cyan - 2 : verde - 3 : naranja - 4 
+	 *  : rojo
 	 * 
-	 * @param i: posici√≥n vertical de la celda.
-	 * @param j: posici√≥n horizontal de la celda.
+	 * @param i: posiciÛn vertical de la celda.
+	 * @param j: posiciÛn horizontal de la celda.
 	 */
 	public void mostrarNumMinasAlrededor(int i, int j) {
 		if (botonesJuego[i][j].getParent() == panelesJuego[i][j]) {
@@ -237,8 +247,8 @@ public class VentanaPrincipal {
 	 * @param porExplosion : Un booleano que indica si es final del juego porque ha
 	 *                     explotado una mina (true) o bien porque hemos desactivado
 	 *                     todas (false)
-	 * @post : Todos los botones se desactivan excepto el de volver a iniciar el
-	 *       juego.
+	 * @post : Muestra un mensaje y un sonido diferente en funciÛn de si hemos ganado o perdido.
+	 * Da la opciÛn de volver a jugar o cerrar el programa
 	 */
 	public void mostrarFinJuego(boolean porExplosion) {
 		String[] mensajes = { "Volver a jugar", "Salir" };
@@ -254,7 +264,7 @@ public class VentanaPrincipal {
 			reproducirSonido("./sonidos/victoria.mp3");
 		}
 		JOptionPane.showMessageDialog(ventana, victoria);
-		int opcion = JOptionPane.showConfirmDialog(ventana, "ÔøΩQuieres volver a jugar?", "Fin de la partida",
+		int opcion = JOptionPane.showConfirmDialog(ventana, "ÔøQuieres volver a jugar?", "Fin de la partida",
 				JOptionPane.YES_NO_OPTION);
 		switch (opcion) {
 		case 0:
@@ -266,9 +276,11 @@ public class VentanaPrincipal {
 
 		}
 	}
-	
+	/**
+	 * Muestra una ventana emergente que da a elegir al usuario entre nivel f·cil, intermedio o difÌcil
+	 */
 	private void pedirNivel() {
-		String[] opciones= {"FÔøΩcil", "Intermedio", "DifÔøΩcil"};
+		String[] opciones= {"F·cil", "Intermedio", "DifÌcil"};
 		int opc = JOptionPane.showOptionDialog(null, "Elige el nivel de dificultad",
                 "Nivel",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
@@ -279,7 +291,6 @@ public class VentanaPrincipal {
 			ventana.setBounds(100,100,700,400);
 			break;
 		case 1:
-
 			ladoTablero=16;
 			minas=40;
 			ventana.setBounds(100,100,900,500);
@@ -296,7 +307,9 @@ public class VentanaPrincipal {
 			break;
         }
 	}
-
+	/**
+	 * VacÌa el panel de juego y vuelve a colocar nuevos paneles, nuevos botones y habilita el botÛn de iniciar juego
+	 */
 	public void resetearJuego() {
 		panelJuego.removeAll();	
 		pedirNivel();
@@ -328,6 +341,9 @@ public class VentanaPrincipal {
 		refrescarPantalla();
 	}
 	
+	/**
+	 * Muestra la informaciÛn de todos los botones: si son minas o el n˙mero de minas alrededor	
+	 */
 	public void abrirTablero() {
 		for (int i = 0; i < panelesJuego.length; i++) {
 			for (int j = 0; j < panelesJuego[i].length; j++) {
@@ -354,6 +370,9 @@ public class VentanaPrincipal {
 		refrescarPantalla();
 	}
 
+	/**
+	 * Activa todos los botones de juego
+	 */
 	public void activarBotones() {
 		for (int i = 0; i < botonesJuego.length; i++) {
 			for (int j = 0; j < botonesJuego[i].length; j++) {
@@ -363,14 +382,14 @@ public class VentanaPrincipal {
 	}
 
 	/**
-	 * M√©todo que muestra la puntuaci√≥n por pantalla.
+	 * MÈtodo que muestra la puntuaciÛn por pantalla.
 	 */
 	public void actualizarPuntuacion() {
 		pantallaPuntuacion.setText(Integer.toString(juego.getPuntuacion()));
 	}
 
 	/**
-	 * M√©todo para refrescar la pantalla
+	 * MÈtodo para refrescar la pantalla
 	 */
 	public void refrescarPantalla() {
 		ventana.revalidate();
@@ -378,7 +397,7 @@ public class VentanaPrincipal {
 	}
 
 	/**
-	 * M√©todo que devuelve el control del juego de una ventana
+	 * MÈtodo que devuelve el control del juego de una ventana
 	 * 
 	 * @return un ControlJuego con el control del juego de la ventana
 	 */
@@ -387,7 +406,14 @@ public class VentanaPrincipal {
 	}
 
 	/**
-	 * M√©todo para inicializar el programa
+	 * MÈtodo para inicializar el programa
+	 * {@code public void inicializar() {
+		// IMPORTANTE, PRIMERO HACEMOS LA VENTANA VISIBLE Y LUEGO INICIALIZAMOS LOS
+		// COMPONENTES.
+		ventana.setVisible(true);
+		inicializarComponentes();
+		inicializarListeners();
+	}}
 	 */
 	public void inicializar() {
 		// IMPORTANTE, PRIMERO HACEMOS LA VENTANA VISIBLE Y LUEGO INICIALIZAMOS LOS
@@ -398,7 +424,7 @@ public class VentanaPrincipal {
 	}
 
 	/**
-	 * Llama al mÔøΩtodo pulsarBoton(a,b) pasando por parÔøΩmetros las casillas
+	 * Llama al mÈtodo pulsarBoton(a,b) pasando por par·metros las casillas
 	 * adyacentes a la que nos ha llegado por parÔøΩmetros
 	 * 
 	 * @param i es la fila de la casilla cuyas adyacentes queremos abrir
@@ -468,7 +494,7 @@ public class VentanaPrincipal {
 	}
 
 	/**
-	 * Crea un objeto ReproduccionSonido e inicia una reproducciÔøΩn
+	 * Crea un objeto ReproduccionSonido e inicia una reproducciÛn
 	 * 
 	 * @param sonido es la ruta del archivo que queremos reproducir
 	 */

@@ -11,6 +11,9 @@ public class ReproduccionSonido extends Thread{
 		this.uri = uri;
 	}
 	
+	/**
+	 * Reproduce el sonido cuya ruta le hemos pasado por parámetros
+	 */
 	public void run() {
 		Player apl;
 		try {
