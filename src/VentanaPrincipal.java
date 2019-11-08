@@ -73,6 +73,8 @@ public class VentanaPrincipal {
 	JMenuBar menu;
 	JMenu opciones;
 	JMenuItem salir;
+	
+	MiReloj reloj;
 
 	// Constructor, marca el tamaño y el cierre del frame
 	public VentanaPrincipal() {
@@ -184,6 +186,10 @@ public class VentanaPrincipal {
 		menu.add(salir);
 		opciones.add(salir);
 		
+		reloj=new MiReloj();
+		reloj.setFontSize(24);
+		panelImagen.add(reloj);
+		
 	}
 
 	/**
@@ -203,6 +209,7 @@ public class VentanaPrincipal {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				activarBotones();
+				reloj.comenzar();
 				botonEmpezar.setEnabled(false);
 			}
 		});
@@ -253,7 +260,7 @@ public class VentanaPrincipal {
 	public void mostrarFinJuego(boolean porExplosion) {
 		String[] mensajes = { "Volver a jugar", "Salir" };
 		String victoria;
-
+		reloj.parar();
 		abrirTablero();
 		if (porExplosion) {
 			victoria = "Has perdido";
